@@ -41,6 +41,13 @@ subprojects {
     }
 
     apply plugin: 'com.diffplug.spotless'
+    apply plugin: 'org.jetbrains.kotlin.android.extensions'
+    apply plugin: 'kotlin-android-extensions'
+
+    androidExtensions {
+        experimental = true
+    }
+
     spotless {
         kotlin {
             target '**/*.kt'
