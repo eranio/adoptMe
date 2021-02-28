@@ -17,6 +17,7 @@ package com.example.androiddevchallenge
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
@@ -46,18 +47,16 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import com.example.androiddevchallenge.data.PetsRepository
 import com.example.androiddevchallenge.ui.theme.MyTheme
+import com.example.androiddevchallenge.ui.theme.typography
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-    val petsRepository = PetsRepository
-
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MyTheme {
                 MyApp()
-//                HomeScreen(navController = rememberNavController())
             }
         }
     }
@@ -75,21 +74,16 @@ fun MyApp() {
         }
 
         composable(
-            "details/{pet}",
-            arguments = listOf(navArgument("pet") {
-           //     type = NavType.ParcelableType(Pet::class.java)
-                type = NavType.StringType
+            "details/{petId}",
+            arguments = listOf(navArgument("petId") {
+                type = NavType.IntType
             })
         ) { backStackEntry ->
-            //val pet = backStackEntry.arguments?.getParcelable<Pet>("pet")
-            val petName = backStackEntry.arguments?.getString("pet")
-            PetDetailsScreen(petName)
+            val petId = backStackEntry.arguments?.getInt("petId")
+            PetDetailsScreen(petId?: -1)
         }
     }
 
-//    Surface(color = MaterialTheme.colors.background) {
-//        Text(text = "Ready... Set... GO!")
-//    }
 }
 
 @ExperimentalAnimationApi
@@ -98,31 +92,14 @@ fun HomeScreen(navController: NavController, petsRepository: PetsRepository) {
     MyTheme {
         PetsList(
             navController,
-            //{ navController.navigate("details") },
             pets = petsRepository.pets
-//            listOf(
-//                Pet(0,"Luna", 2, R.drawable.dog1),
-//                Pet(1,"Charlie", 6, R.drawable.dog2),
-//                Pet(2,"Brandy", 3, R.drawable.dog3),
-//                Pet(3,"Buddy", 4, R.drawable.dog4),
-//                Pet(4,"Toffie", 7, R.drawable.dog5),
-//                Pet(5,"Dixie", 2, R.drawable.dog6),
-//                Pet(6,"Chase", 1, R.drawable.dog7),
-//                Pet(7,"Laurie", 2, R.drawable.dog8),
-//                Pet(8,"Billy", 3, R.drawable.dog9),
-//                Pet(9,"Candy", 2, R.drawable.dog10),
-//                Pet(10,"Bobbie", 5, R.drawable.dog11),
-//                Pet(11,"Arrow", 2, R.drawable.dog12),
-//                Pet(12,"Johnny", 4, R.drawable.dog13)
-//            )
         )
     }
 }
 
 @Composable
-fun PetDetailsScreen(pet: String?) {
-    val name = "Luna"
-  //  val petObj = navController.currentBackStackEntry?.arguments?.get("pet") as Pet
+fun PetDetailsScreen(petId: Int) {
+    val pet = PetsRepository.getPet(petId)
 
     MyTheme {
         Column(
@@ -134,14 +111,13 @@ fun PetDetailsScreen(pet: String?) {
                     .fillMaxWidth(),
                 alignment = Alignment.TopCenter,
                 contentScale = ContentScale.Crop,
-                //.height(100.dp)
-                painter = painterResource(R.drawable.dog1),
+                painter = painterResource(pet?.getImageId() ?: R.drawable.dog1),
                 contentDescription = null
             )
 
             Box(modifier = Modifier.padding(12.dp)) {
                 Spacer(modifier = Modifier.size(12.dp))
-                Text("Name: ${name}")
+                Text("Name: ${pet?.getName()}", style = MaterialTheme.typography.h5)
             }
         }
     }
@@ -151,7 +127,7 @@ fun PetDetailsScreen(pet: String?) {
 @Composable
 fun DetailsView() {
     MyTheme {
-        PetDetailsScreen(null)
+        PetDetailsScreen(-1)
     }
 }
 
@@ -183,14 +159,13 @@ fun PetRow(petName: String, petAge: Int, imageId: Int) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                //.size(140.dp)
                 .padding(16.dp)
                 .clip(shape = RoundedCornerShape(14.dp))
         ) {
             Column(modifier = Modifier.weight(4f)) {
-                Text(text = "$petName")
+                Text(text = "$petName", style = MaterialTheme.typography.h5)
                 Spacer(Modifier.size(20.dp))
-                Text(text = "Age: $petAge")
+                Text(text = "Age: $petAge", style = MaterialTheme.typography.subtitle2)
             }
             Image(
                 modifier = Modifier
@@ -234,14 +209,8 @@ fun PetsList(navController: NavController, pets: List<IPet>) {
                 Card(
                     elevation = 4.dp,
                     modifier = Modifier.clickable {
-//                        navController.currentBackStackEntry?.arguments?.putParcelable(
-//                            "pet",
-//                            pet as Parcelable
-//                        )
-                        navController.navigate("pet/${pet.getName()}")
-//                        onClick()
+                        navController.navigate("details/${pet.getId()}")
                     }) {
-//                        navController.navigate("details") }) {
                     PetRow(
                         petName = pet.getName(),
                         petAge = pet.getAge(),
@@ -266,6 +235,5 @@ fun PetsList(navController: NavController, pets: List<IPet>) {
                 Text("Top")
             }
         }
-
     }
 }
