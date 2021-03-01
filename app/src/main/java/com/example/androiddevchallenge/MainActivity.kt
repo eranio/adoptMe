@@ -16,8 +16,6 @@
 package com.example.androiddevchallenge
 
 import android.os.Bundle
-import android.os.Parcelable
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
@@ -42,10 +40,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Surface
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,10 +54,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavType
-import androidx.navigation.compose.*
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.navigate
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navArgument
 import com.example.androiddevchallenge.data.PetsRepository
 import com.example.androiddevchallenge.ui.theme.MyTheme
-import com.example.androiddevchallenge.ui.theme.typography
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -164,9 +165,6 @@ fun DarkPreview() {
 
 @Composable
 fun PetRow(petName: String, petAge: Int, imageId: Int) {
-    var showPopup by remember { mutableStateOf(false) }
-    val onPopupDismissed = { showPopup = false }
-
     Surface(color = Color.LightGray) {
         Row(
             modifier = Modifier
@@ -189,19 +187,6 @@ fun PetRow(petName: String, petAge: Int, imageId: Int) {
             )
 
         }
-    }
-
-    if (showPopup) {
-        AlertDialog(onDismissRequest = onPopupDismissed,
-            text = {
-
-                Text("Congrats! you just clicked a Composable")
-            },
-            confirmButton = {
-                Button(onClick = onPopupDismissed) {
-                    Text("OK")
-                }
-            })
     }
 }
 
