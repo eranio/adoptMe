@@ -18,7 +18,8 @@ package com.example.androiddevchallenge
 import android.os.Parcel
 import android.os.Parcelable
 
-data class Pet(private val id: Int ,private val name: String?, private val age: Int, private val imageId:Int): IPet,
+data class Pet(private val id: Int, private val name: String?, private val age: Int, private val imageId: Int) :
+    IPet,
     Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
@@ -33,7 +34,7 @@ data class Pet(private val id: Int ,private val name: String?, private val age: 
     }
 
     override fun getName(): String {
-        return name?: ""
+        return name ?: ""
     }
 
     override fun getAge(): Int {
